@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#e2381e</color>
+    <color name="colorPrimaryDark">#d4371f</color>
+    <color name="colorAccent">#ffe240</color>
+    <color name="theme_cardinal_bg">#e2381e</color>
+    <color name="theme_obsidian_bg">#151211</color>
+    <color name="theme_ember_bg">#3A1B12</color>
+    <color name="theme_polar_bg">#EEF7F8</color>
+    <color name="theme_cardinal_accent">#FFE240</color>
+    <color name="theme_obsidian_accent">#FF8A3C</color>
+    <color name="theme_ember_accent">#FFB000</color>
+    <color name="theme_polar_accent">#1E9BB2</color>
+</resources>

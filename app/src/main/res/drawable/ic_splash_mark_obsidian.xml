@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="950"
+    android:viewportHeight="950">
+    <!-- Main bolt: orange accent -->
+    <path
+        android:fillColor="#FF8A3C"
+        android:pathData="M 594.08 171.17 L 330.29 396.2 L 432.57 395.12 L 260.3 567.4 L 352.9 567.4 L 187.08 733.21 L 458.42 528.64 L 376.58 524.33 L 548.86 341.29 L 449.8 347.75 Z" />
+    <!-- Overlay highlight: warm gold -->
+    <path
+        android:fillColor="#FFD166"
+        android:fillAlpha="0.85"
+        android:pathData="M 750.08 228.17 L 486.29 453.2 L 588.57 452.12 L 416.3 624.4 L 508.9 624.4 L 343.08 790.21 L 614.42 585.64 L 532.59 581.33 L 704.86 398.29 L 605.8 404.75 Z" />
+</vector>

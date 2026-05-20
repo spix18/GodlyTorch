@@ -1,0 +1,120 @@
+name: Build on PR merge
+
+on:
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch:
+
+concurrency:
+  group: build-and-release-on-merge-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: Build & Draft Release
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Read version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION_NAME=$(grep -oE 'versionName "[^"]+"' app/build.gradle | sed -E 's/versionName "([^"]+)"/\1/' | head -n1)
+          if [ -f app/version.properties ]; then
+            VERSION_CODE=$(grep -oE 'VERSION_CODE=[0-9]+' app/version.properties | head -n1 | cut -d= -f2)
+          else
+            VERSION_CODE="1"
+          fi
+          TAG="v${VERSION_NAME}-build${VERSION_CODE}"
+          echo "version_name=${VERSION_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version_code=${VERSION_CODE}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Version: ${VERSION_NAME} (build ${VERSION_CODE}) -> tag ${TAG}"
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
+
+      - name: Build release APK (unsigned)
+        run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
+
+      - name: Stage APKs
+        run: |
+          set -euo pipefail
+          mkdir -p release-artifacts
+          DEBUG_SRC=$(ls app/build/outputs/apk/debug/*.apk | head -n1)
+          cp "$DEBUG_SRC" "release-artifacts/godlytorch-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.version_code }}-debug.apk"
+          if compgen -G "app/build/outputs/apk/release/*.apk" > /dev/null; then
+            RELEASE_SRC=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+            cp "$RELEASE_SRC" "release-artifacts/godlytorch-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.version_code }}-release-unsigned.apk"
+          fi
+          ls -la release-artifacts/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: godlytorch-apks
+          path: release-artifacts/*.apk
+          if-no-files-found: error
+
+      - name: Delete existing release/tag for this version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          OWNER_REPO="${GITHUB_REPOSITORY}"
+          resp=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/${OWNER_REPO}/releases/tags/${TAG}" || true)
+          release_id=$(echo "${resp}" | jq -r '.id // empty' 2>/dev/null || true)
+          if [ -n "${release_id}" ]; then
+            echo "Deleting existing release ${TAG} (ID: ${release_id})"
+            curl -s -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/${OWNER_REPO}/releases/${release_id}" || true
+            curl -s -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/${OWNER_REPO}/git/refs/tags/${TAG}" || true
+          fi
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: GodlyTorch ${{ steps.version.outputs.version_name }} (build ${{ steps.version.outputs.version_code }})
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          files: release-artifacts/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,38 @@
+# Built files
+/build
+/captures
+**/build/
+.externalNativeBuild
+.cxx/
+*.apk
+*.aab
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Auto-incremented build counter
+app/version.properties
+
+# Local SDK / IDE config
+local.properties
+.idea/
+*.iml
+.kotlin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Keystores (release keys must come from CI secrets, never commit)
+release.keystore
+*.jks
+keystore.properties
+
+# Output dirs
+/app/release/

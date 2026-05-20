@@ -1,0 +1,111 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.teamdarkness.godlytorch'
+    compileSdk 35
+
+    def versionProp = file('version.properties')
+    Properties versionProps = new Properties()
+    if (versionProp.canRead()) {
+        versionProps.load(new FileInputStream(versionProp))
+    } else {
+        versionProps['VERSION_CODE'] = '1'
+    }
+    def code = (versionProps['VERSION_CODE'] as String).toInteger() + 1
+    versionProps['VERSION_CODE'] = code.toString()
+    versionProps.store(versionProp.newWriter(), null)
+
+    defaultConfig {
+        applicationId "com.teamdarkness.godlytorch"
+        minSdk 24
+        targetSdk 35
+        versionCode code
+        versionName "2.0.0"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("../debug-key")
+            storePassword 'godlytorch'
+            keyAlias 'godly'
+            keyPassword 'godlytorch'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    packaging {
+        resources {
+            excludes += [
+                'META-INF/proguard/androidx-annotations.pro',
+                'META-INF/DEPENDENCIES',
+                'META-INF/LICENSE*',
+                'META-INF/NOTICE*',
+                'META-INF/*.kotlin_module'
+            ]
+        }
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
+            outputFileName = "app-${variant.buildType.name}-new.apk"
+        }
+    }
+}
+
+dependencies {
+    // AndroidX core
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'com.google.android.material:material:1.12.0'
+
+    // Lifecycle + coroutines
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7'
+    implementation 'androidx.activity:activity-ktx:1.9.3'
+    implementation 'androidx.fragment:fragment-ktx:1.8.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
+
+    // Root shell
+    implementation 'com.github.topjohnwu.libsu:core:5.2.2'
+
+    // Knob UI
+    implementation 'com.github.BRoy98:Croller:master-SNAPSHOT'
+
+    // Material dialogs (active fork)
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
+
+    // Iconics (modern AndroidX)
+    implementation 'com.mikepenz:iconics-core:5.4.0'
+    implementation 'com.mikepenz:iconics-views:5.4.0'
+    implementation 'com.mikepenz:google-material-typeface:4.0.0.3-kotlin@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:5.13.3.0-kotlin@aar'
+}

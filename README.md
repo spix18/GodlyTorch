@@ -1,0 +1,56 @@
+# Godly Torch
+
+[![License](https://img.shields.io/badge/License-GNU%20GPL%20v3-orange.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)]()
+
+Root-only torch app with per-LED brightness knobs for devices with dual-tone (white + yellow) flashlight LEDs. Works on single-LED devices too.
+
+> ⚠️ **Requires root.** Writes directly to `/sys/class/leds/...` to bypass the camera HAL torch limits.
+
+## Features
+
+- Independent white / yellow / master brightness knobs (dual-tone) or one master knob (single-LED)
+- Quick Settings tiles: Master, White, Yellow — toggle, fixed-intensity, or N-step intensity cycle
+- Four hand-picked themes (Cardinal, Obsidian, Ember, Polar) with seamless live theme switching and matching cold-start splash
+- Lightweight: no analytics, no network, no Firebase
+
+## Supported devices
+
+Profiles for many OnePlus, Xiaomi, HTC, LeEco, Mi 6, etc. live in `app/src/main/java/com/teamdarkness/godlytorch/Utils/DeviceList.kt`. Unsupported devices can submit their `Build.DEVICE` ID via the in-app **Contact** flow.
+
+## Build
+
+```bash
+./gradlew :app:assembleDebug
+```
+
+APK lands in `app/build/outputs/apk/debug/`. Requires **JDK 17** and **Android SDK 35**.
+
+The repo ships with a `debug-key` for local debug signing only. Release builds are signed via CI keystore secrets (see `.github/workflows/build.yml`).
+
+## Architecture
+
+```
+app/src/main/java/com/teamdarkness/godlytorch/
+├── Activity/           MainActivity (single launcher, dynamic theme via SplashScreen.setSplashScreenTheme)
+├── Fragment/           Launch / ThreeKnob / SingleKnob / Incompatible + KnobTheming helper
+├── Service/            TorchTileBase + Master / White / Yellow tile subclasses (~60 lines each)
+├── Settings/           SettingsActivity + PreferenceFragment + DeviceListAdapter
+├── Utils/              Prefs, LedController (sysfs writes), AppTheme, Device, DeviceList, Utils
+└── Dialog/             TileDialog
+```
+
+Key design notes:
+
+- **`LedController`** owns all `echo N > /sys/class/leds/...` command building and dispatch (`com.topjohnwu.libsu`)
+- **`TorchTileBase`** encodes the shared QS tile lifecycle / mutex / 6-step cycle. Per-tile classes only describe their identity and "on" command builder
+- Dynamic theming via `SplashScreen.setSplashScreenTheme(themeRes)` (API 31+) — no launcher aliases, no double recents
+
+## Credits
+
+- [**Bishwajyoti Roy**](https://github.com/broy98/) — original author
+- [**Rohan Khurana**](https://github.com/rk2810/) — co-author
+
+## License
+
+GNU GPL v3. See [LICENSE](LICENSE).

@@ -1,0 +1,36 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/theme_cardinal_bg</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark_cardinal</item>
+        <item name="android:windowSplashScreenBackground">@color/theme_cardinal_bg</item>
+    </style>
+
+    <style name="AppTheme.Cardinal" parent="AppTheme">
+        <item name="android:windowBackground">@color/theme_cardinal_bg</item>
+        <item name="android:windowSplashScreenBackground">@color/theme_cardinal_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark_cardinal</item>
+    </style>
+
+    <style name="AppTheme.Obsidian" parent="AppTheme">
+        <item name="android:windowBackground">@color/theme_obsidian_bg</item>
+        <item name="android:windowSplashScreenBackground">@color/theme_obsidian_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark_obsidian</item>
+    </style>
+
+    <style name="AppTheme.Ember" parent="AppTheme">
+        <item name="android:windowBackground">@color/theme_ember_bg</item>
+        <item name="android:windowSplashScreenBackground">@color/theme_ember_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark_ember</item>
+    </style>
+
+    <style name="AppTheme.Polar" parent="AppTheme">
+        <item name="android:windowBackground">@color/theme_polar_bg</item>
+        <item name="android:windowSplashScreenBackground">@color/theme_polar_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_mark_polar</item>
+    </style>
+</resources>
