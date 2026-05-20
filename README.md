@@ -14,7 +14,6 @@ This fork modernises the original [BRoy98/GodlyTorch](https://github.com/BRoy98/
 - **Auto device detection** — first launch matches your `Build.DEVICE` codename against the catalog (with alias fallback) and auto-selects the right LED profile. No manual picking on supported devices.
 - **More supported devices** — expanded catalog with extra codename aliases for OnePlus 9R (`LE2100`, `OnePlus9R`), OnePlus 8T variants, Mi 6 (`wayne`), and others.
 - **Four built-in themes** — Cardinal (red), Obsidian (dark), Ember (warm brown), Polar (cool light). Switch live in Settings — no app restart, no flash, no close-on-change.
-- **Theme-matched cold-start splash** — each theme has its own splash icon (two-bolt design from the official logo) and background color, persisted via `SplashScreen.setSplashScreenTheme` so the next cold launch always matches your last picked theme.
 - **Edge-to-edge UI** — full Android 15 support, predictive back gesture, target SDK 35.
 - **Zero telemetry** — removed Firebase, Bitrise, all analytics. App has no network code at all.
 - **Modernised internals** — Kotlin coroutines instead of legacy `Handler` callbacks, AGP 8, JDK 17, lifecycle-aware delays, shared `LedController` / `TorchTileBase` / `KnobTheming` helpers.
