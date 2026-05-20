@@ -39,4 +39,4 @@ Append to `DeviceList.kt`. Use `Device.aliases(...)` for codename variants. `Uti
 
 ## CI
 
-`.github/workflows/build.yml` builds debug + release APKs on PR-merge / `workflow_dispatch` and creates a draft GitHub Release with both APKs attached. Release APK is **unsigned** — sign manually before publishing.
+`.github/workflows/build.yml` builds the debug APK on PR-merge / `workflow_dispatch` and creates a draft GitHub Release with the APK attached. Release build is intentionally skipped — unsigned release APKs cannot be installed on Android. To ship a signed release, build locally with a real keystore.

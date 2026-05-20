@@ -70,19 +70,12 @@ jobs:
       - name: Build debug APK
         run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
 
-      - name: Build release APK (unsigned)
-        run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
-
-      - name: Stage APKs
+      - name: Stage APK
         run: |
           set -euo pipefail
           mkdir -p release-artifacts
           DEBUG_SRC=$(ls app/build/outputs/apk/debug/*.apk | head -n1)
           cp "$DEBUG_SRC" "release-artifacts/godlytorch-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.version_code }}-debug.apk"
-          if compgen -G "app/build/outputs/apk/release/*.apk" > /dev/null; then
-            RELEASE_SRC=$(ls app/build/outputs/apk/release/*.apk | head -n1)
-            cp "$RELEASE_SRC" "release-artifacts/godlytorch-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.version_code }}-release-unsigned.apk"
-          fi
           ls -la release-artifacts/
 
       - name: Upload build artifacts
